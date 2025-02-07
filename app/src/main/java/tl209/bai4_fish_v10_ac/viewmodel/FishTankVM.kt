@@ -5,16 +5,13 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import tl209.bai4_fish_v10_ac.model.reponsitory.FishRepository
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Fish
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.FishFactory
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.FishTank
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.toFishData
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.toPresentationFish
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Fish
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.FishFactory
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.FishTank
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.toFishData
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.toPresentationFish
 
 class FishTankVM : ViewModel() {
     // Quản lý bể cá thông qua SharkTank
@@ -47,6 +44,7 @@ class FishTankVM : ViewModel() {
     fun addRandomFish(screenWidth: Int, screenHeight: Int) {
         val fish: Fish = FishFactory.createRandomFish(screenWidth, screenHeight)
         fishTank.addFish(fish)
+        fish.startMoving(viewModelScope, screenWidth, screenHeight)
     }
 
     // Bắt đầu vòng lặp cập nhật bể cá trên coroutine

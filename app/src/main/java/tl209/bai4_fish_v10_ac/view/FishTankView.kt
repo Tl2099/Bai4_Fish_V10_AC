@@ -11,11 +11,11 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tl209.bai4_fish_v10_ac.viewmodel.FishTankVM
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Fish
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Nemo
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Salmon
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Shark
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Shrimp
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Fish
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Nemo
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Salmon
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Shark
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Shrimp
 
 class FishTankView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -64,21 +64,32 @@ class FishTankView @JvmOverloads constructor(
         fishList.forEach { fish ->
             when (fish) {
                 is Shark -> {
-                    sharkView.drawShark(canvas, paint, fish)
+                    sharkView.draw(canvas, paint, fish)
+                    //sharkView.drawShark(canvas, paint, fish)
                     Log.i("Thread4", "Đã tạo Shark")
                 }
                 is Salmon -> {
-                    salmonView.drawSalmon(canvas, paint, fish)
+                    salmonView.draw(canvas, paint, fish)
+                    //salmonView.drawSalmon(canvas, paint, fish)
                     Log.i("Thread4", "Đã tạo Salmon")}
 
                 is Nemo -> {
-                    nemoView.drawNemo(canvas, paint, fish)
+                    nemoView.draw(canvas, paint, fish)
+                    //nemoView.drawNemo(canvas, paint, fish)
                     Log.i("Thread4", "Đã tạo Nemo")
                 }
-                else -> shrimpView.drawShrimp(canvas, paint, fish as Shrimp)
+                is Shrimp -> {
+                    shrimpView.draw(canvas, paint, fish)
+                    //shrimpView.drawNemo(canvas, paint, fish)
+                    Log.i("Thread4", "Đã tạo Nemo")
+                }
+                else -> {
+                    Log.e("FishTankView", "Unknown fish type: $fish")
+                    //shrimpView.drawShrimp(canvas, paint, fish as Shrimp)
+                }
             }
         }
-        invalidate()
+        postInvalidateOnAnimation() // Yeu cau ve lai man hình voi toc do man hinh
 
     }
 }

@@ -1,4 +1,4 @@
-package tl209.bai4_fish_v10_ac.viewmodel.dtmodels
+package tl209.bai4_fish_v10_ac.viewmodel.domainmodels
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.math.sqrt
 
 class FishTank {
     private val _fishList = MutableStateFlow<List<Fish>>(emptyList())
@@ -34,17 +35,17 @@ class FishTank {
                 //Lay danh sach hien tai
                 val current = _fishList.value.toMutableList()
 
-                //Cap nhat vi tri cho tung con ca
-                current.forEach { fish ->
-                    //Cap nhat chuyen dong cua tung con ca
-                    fish.move(screenWidth, screenHeight)
-                }
+//                //Cap nhat vi tri cho tung con ca
+//                current.forEach { fish ->
+//                    //Cap nhat chuyen dong cua tung con ca
+//                    fish.move(screenWidth, screenHeight)
+//                }
                 val eaten = mutableSetOf<Fish>()
                 for (fishA in current) {
                     for (fishB in current) {
                         if (fishA !== fishB && fishB !in eaten) {
-                            if (fishA.checkCollision(fishB)) {
-                                fishA.handleCollision(fishB)
+                            if (checkCollision(fishA,fishB)) {
+                                handleCollision(fishA,fishB)
                                 if (fishA.canEat(fishB)) {
                                     eaten.add(fishB)
                                 }
@@ -65,6 +66,27 @@ class FishTank {
                 }
                 delay(30L)
             }
+        }
+    }
+
+    // Hàm kiểm tra va chạm giữa 2 cá
+    fun checkCollision(fishA: Fish, fishB: Fish): Boolean {
+        val dx = fishA.posX - fishB.posX
+        val dy = fishA.posY - fishB.posY
+        val distance = sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+        return distance < (fishA.size + fishB.size)
+    }
+
+    // Hàm xử lý va chạm giữa 2 cá
+    fun handleCollision(fishA: Fish, fishB: Fish) {
+        if (fishA.canEat(fishB)) {
+            fishA.eat(fishB)
+        } else if (kotlin.math.abs(fishA.size - fishB.size) <= 1f) {
+            // Đảo chiều vận tốc cho cả 2 cá
+            fishA.vx = -fishA.vx
+            fishA.vy = -fishA.vy
+            fishB.vx = -fishB.vx
+            fishB.vy = -fishB.vy
         }
     }
 

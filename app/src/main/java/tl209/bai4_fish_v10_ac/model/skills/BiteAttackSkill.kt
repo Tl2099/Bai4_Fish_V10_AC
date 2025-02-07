@@ -1,6 +1,6 @@
 package tl209.bai4_fish_v10_ac.model.skills
 
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Fish
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Fish
 
 class BiteAttackSkill(
     override val cooldown: Long = 3000L

@@ -1,4 +1,4 @@
-package tl209.bai4_fish_v10_ac.viewmodel.dtmodels
+package tl209.bai4_fish_v10_ac.viewmodel.domainmodels
 
 import kotlin.random.Random
 
@@ -57,4 +57,29 @@ object FishFactory {
             )
         }
     }
+
+    fun createRandomShrimpList(screenWidth: Int, screenHeight: Int, count: Int = 10): List<Shrimp> {
+        val shrimpList = mutableListOf<Shrimp>()
+        repeat(count) { i ->
+            val randomX = Random.nextInt(screenWidth).toFloat()
+            val randomY = Random.nextInt(screenHeight).toFloat()
+            // Tạo một con Shrimp với các giá trị mặc định và vận tốc ngẫu nhiên
+            val shrimp = Shrimp(
+                id = System.currentTimeMillis(),  // Hoặc bạn có thể để mặc định nếu class Shrimp đã có giá trị mặc định
+                name = "Shrimp_$i",
+                posX = randomX,
+                posY = randomY,
+                size = 10f,           // Kích thước (bán kính) của Shrimp
+                vx = Random.nextFloat() * 2 - 1, // Vận tốc theo X ngẫu nhiên từ -1 đến 1
+                vy = Random.nextFloat() * 2 - 1, // Vận tốc theo Y ngẫu nhiên từ -1 đến 1
+                mass = 5f,
+                score = 5,
+                type = "Shrimp"
+            )
+            shrimpList.add(shrimp)
+        }
+        return shrimpList
+    }
+
+
 }

@@ -1,8 +1,14 @@
-package tl209.bai4_fish_v10_ac.viewmodel.dtmodels
+package tl209.bai4_fish_v10_ac.viewmodel.domainmodels
 
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.RectF
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import tl209.bai4_fish_v10_ac.model.skills.FishSkill
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -12,7 +18,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-open class Fish(
+abstract class Fish(
     open val id: Long = System.currentTimeMillis(),
     open var name: String,
     open var posX: Float,
@@ -33,27 +39,10 @@ open class Fish(
     // StateFlow cập nhật vị trí để notify UI
     val positionState = MutableStateFlow(Pair(posX, posY))
 
-    open val collisionBox: RectF
+     val collisionBox: RectF
         get() = RectF(posX, posY, posX + size, posY + size)
 
-
-    open fun checkCollision(other: Fish): Boolean {
-        val dx = posX - other.posX
-        val dy = posY - other.posY
-        val distance = sqrt((dx * dx + dy * dy).toDouble()).toFloat()
-        return distance < (size + other.size)
-    }
-
-    open fun handleCollision(other: Fish){
-        if(this.canEat(other)){
-            this.eat(other)
-        }else if(kotlin.math.abs(this.size - other.size) <=1f){
-            vx =- vx
-            vy =- vy
-            other.vx = -other.vx
-            other.vy = -other.vy
-        }
-    }
+    abstract fun draw(canvas: Canvas, paint: Paint)
 
     private fun updatePosition() {
         posX += vx
@@ -71,7 +60,31 @@ open class Fish(
         return currentAngle
     }
 
-    private fun applyWanderForce() {
+    open fun move(screenWidth: Int, screenHeight: Int) {
+        applyWanderForce()
+        applyBoundaryForce(screenWidth, screenHeight)
+        limitSpeed()
+        updatePosition()
+        updateRotation()
+    }
+
+    fun startMoving(scope: CoroutineScope, screenWidth: Int, screenHeight: Int) {
+        if (moveJob?.isActive == true) return  // Nếu đã chạy, không khởi chạy lại
+        moveJob = scope.launch {
+            while (isActive) {
+                move(screenWidth, screenHeight)
+                // Nếu bạn muốn cập nhật trạng thái (ví dụ: thông qua StateFlow) của cá thì thêm ở đây.
+                delay(30L)  // Delay giữa các lần cập nhật, ~33fps
+            }
+        }
+    }
+
+    fun stopMoving() {
+        moveJob?.cancel()
+        moveJob = null
+    }
+
+    open fun applyWanderForce() {
         val angleNoise = (Random.nextFloat() - 0.5f) * wanderStrength
         targetAngle += angleNoise
 
@@ -85,7 +98,7 @@ open class Fish(
         vy += constrain(steerY, -maxForce, maxForce)
     }
 
-    private fun applyBoundaryForce(screenWidth: Int, screenHeight: Int) {
+    open fun applyBoundaryForce(screenWidth: Int, screenHeight: Int) {
         val margin = size * 2
         val boundaryForce = 0.2f
         when {
@@ -96,7 +109,7 @@ open class Fish(
         }
     }
 
-    private fun limitSpeed() {
+    open fun limitSpeed() {
         val speed = sqrt(vx.pow(2) + vy.pow(2))
         if (speed > maxSpeed) {
             vx = vx / speed * maxSpeed
@@ -104,17 +117,9 @@ open class Fish(
         }
     }
 
-    private fun updateRotation() {
+    open fun updateRotation() {
         val target = atan2(vy, vx).toDegrees()
         currentAngle = currentAngle + (target - currentAngle) * 0.1f
-    }
-
-    open fun move(screenWidth: Int, screenHeight: Int) {
-        applyWanderForce()
-        applyBoundaryForce(screenWidth, screenHeight)
-        limitSpeed()
-        updatePosition()
-        updateRotation()
     }
 
     private fun constrain(value: Float, min: Float, max: Float) = value.coerceIn(min, max)
@@ -123,7 +128,7 @@ open class Fish(
     open val skills: MutableList<FishSkill> = mutableListOf()
 
     // Khi cá ăn được cá khác
-    open fun eat(prey: Fish) {
+    internal fun eat(prey: Fish) {
         score += prey.score
         mass += prey.mass
         size += prey.size * 0.1f
@@ -134,21 +139,4 @@ open class Fish(
         // Chỉ ăn khi kích thước của predator lớn hơn prey
         return this.size > prey.size
     }
-
-//    fun startMoving(scope: CoroutineScope, fishTank: FishTank) {
-//        moveJob = CoroutineScope(Dispatchers.Default).launch {
-//            while (isActive) {
-//
-//                //Test thu doan nay ve doc do
-//                //Chay sao cho muon {
-//                val now = System.nanoTime()
-//                val deltaTime = (now - lastUpdateTime) / 1_000_000_000f  // tính deltaTime bằng giây
-//                lastUpdateTime = now
-//                // }
-//                fishTank.moveFish(this@Fish) // Gọi phương thức moveFish từ FishTank
-//                //check.invoke(this@Fish)
-//                delay((deltaTime*1000).toLong())  // Delay giữa các lần di chuyển
-//            }
-//        }
-//    }
 }

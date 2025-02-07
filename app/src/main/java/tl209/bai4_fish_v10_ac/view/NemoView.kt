@@ -3,10 +3,11 @@ package tl209.bai4_fish_v10_ac.view
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import tl209.bai4_fish_v10_ac.viewmodel.dtmodels.Nemo
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Nemo
 
-class NemoView{
-    fun drawNemo(canvas: Canvas, paint: Paint, fish: Nemo) {
+class NemoView: FishDrawer<Nemo>{
+
+    override fun draw(canvas: Canvas, paint: Paint, fish: Nemo) {
         val collisionRadius: Float = fish.size * 0.8f
         canvas.save()
         canvas.rotate(fish.getCurrentAngle(), fish.posX, fish.posY)
@@ -42,6 +43,47 @@ class NemoView{
         }
         canvas.drawCircle(fish.posX, fish.posY, collisionRadius, debugPaint)
     }
+    
+//    override fun draw(canvas: Canvas, paint: Paint) {
+//        //super.onDraw(canvas, paint)
+//        val collisionRadius: Float = this.size * 0.8f
+//        canvas.save()
+//        canvas.rotate(this.getCurrentAngle(), this.posX, this.posY)
+//        paint.color = this.color
+//
+//
+//        // Vẽ thân cá
+//        canvas.drawOval(
+//            this.posX - this.size,
+//            this.posY - this.size/2,
+//            this.posX + this.size,
+//            this.posY + this.size/2,
+//            paint
+//        )
+//
+//        // Vẽ đuôi
+//        canvas.drawTriangle(
+//            this.posX - this.size * 1.2f, this.posY,
+//            this.posX - this.size * 1.8f, this.posY - this.size/2,
+//            this.posX - this.size * 1.8f, this.posY + this.size/2,
+//            paint
+//        )
+//
+//        canvas.restore()
+//        paint.color = android.graphics.Color.BLACK
+//        paint.textSize = this.size / 2
+//        canvas.drawText(this.score.toString(), this.posX - this.size / 2, this.posY - this.size, paint)
+//        // Vẽ vùng va chạm (debug)
+//        val debugPaint = Paint().apply {
+//            color = Color.RED
+//            style = Paint.Style.STROKE
+//            strokeWidth = 2f
+//        }
+//        canvas.drawCircle(this.posX, this.posY, collisionRadius, debugPaint)
+//    }
+//    fun drawNemo(canvas: Canvas, paint: Paint, fish: Nemo) {
+//
+//    }
     private fun Canvas.drawTriangle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float, paint: Paint) {
         drawPath(android.graphics.Path().apply {
             moveTo(x1, y1)
@@ -50,4 +92,6 @@ class NemoView{
             close()
         }, paint)
     }
+
+
 }
