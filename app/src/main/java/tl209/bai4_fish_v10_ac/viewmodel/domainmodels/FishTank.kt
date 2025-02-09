@@ -24,6 +24,12 @@ class FishTank {
         _fishList.value = current
     }
 
+    fun addFishList(fishList: List<Fish>){
+        val current = _fishList.value.toMutableList()
+        current.addAll(fishList)
+        _fishList.value = current
+    }
+
     fun setFishList(newList: List<Fish>) {
         _fishList.value = newList
     }
@@ -35,11 +41,6 @@ class FishTank {
                 //Lay danh sach hien tai
                 val current = _fishList.value.toMutableList()
 
-//                //Cap nhat vi tri cho tung con ca
-//                current.forEach { fish ->
-//                    //Cap nhat chuyen dong cua tung con ca
-//                    fish.move(screenWidth, screenHeight)
-//                }
                 val eaten = mutableSetOf<Fish>()
                 for (fishA in current) {
                     for (fishB in current) {

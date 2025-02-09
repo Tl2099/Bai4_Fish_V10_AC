@@ -1,5 +1,6 @@
 package tl209.bai4_fish_v10_ac.viewmodel
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -10,12 +11,14 @@ import tl209.bai4_fish_v10_ac.model.reponsitory.FishRepository
 import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Fish
 import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.FishFactory
 import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.FishTank
+import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.Shrimp
 import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.toFishData
 import tl209.bai4_fish_v10_ac.viewmodel.domainmodels.toPresentationFish
 
 class FishTankVM : ViewModel() {
     // Quản lý bể cá thông qua SharkTank
     private val fishTank = FishTank()
+    private var hasAddedShrimp = false
     val fishList: StateFlow<List<Fish>> get() = fishTank.fishList
 
     // Tải dữ liệu FishData từ Repository và convert sang Fish
@@ -41,9 +44,18 @@ class FishTankVM : ViewModel() {
     }
 
     // Thêm cá ngẫu nhiên qua Factory và cập nhật bể
+    @SuppressLint("SuspiciousIndentation")
     fun addRandomFish(screenWidth: Int, screenHeight: Int) {
         val fish: Fish = FishFactory.createRandomFish(screenWidth, screenHeight)
+        if(!hasAddedShrimp) {
+            val shrimp: List<Shrimp> =
+                FishFactory.createRandomShrimpList(screenWidth, screenHeight, 10, scope = viewModelScope)
+                Log.i("Thread5", "Them roi")
+                fishTank.addFishList(shrimp)
+            hasAddedShrimp = true
+        }
         fishTank.addFish(fish)
+        Log.i("Thread6", "Them ca roi")
         fish.startMoving(viewModelScope, screenWidth, screenHeight)
     }
 

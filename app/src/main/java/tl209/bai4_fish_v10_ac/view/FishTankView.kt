@@ -1,5 +1,6 @@
 package tl209.bai4_fish_v10_ac.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -49,45 +50,56 @@ class FishTankView @JvmOverloads constructor(
     }
 
 
-    // Các view cài đặt cho từng loại cá
-    private val sharkView = SharkView()
-    private val salmonView = SalmonView()
-    private val nemoView = NemoView()
-    private val shrimpView = ShrimpView()
-    // Tương tự, tạo salmonView, chubView, shrimpView nếu cần
-
+    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         // Vẽ nền bể cá
         canvas.drawColor(0xFFCCE5FF.toInt())
 
         fishList.forEach { fish ->
-            when (fish) {
-                is Shark -> {
-                    sharkView.draw(canvas, paint, fish)
-                    //sharkView.drawShark(canvas, paint, fish)
-                    Log.i("Thread4", "Đã tạo Shark")
-                }
-                is Salmon -> {
-                    salmonView.draw(canvas, paint, fish)
-                    //salmonView.drawSalmon(canvas, paint, fish)
-                    Log.i("Thread4", "Đã tạo Salmon")}
+            // Nếu cần chuyển đổi, bạn có thể sử dụng adapter:
+             //val fishView = FishViewAdapter.adapt(fish)
+             //fishView.draw(canvas, paint)
+            // Nếu lớp domain đã có hàm draw() được override (như trong NemoView, SharkView, …)
 
+            when (fish) {
                 is Nemo -> {
-                    nemoView.draw(canvas, paint, fish)
-                    //nemoView.drawNemo(canvas, paint, fish)
-                    Log.i("Thread4", "Đã tạo Nemo")
+                    // Vì fish đã là NemoView (vì NemoView kế thừa Nemo), ta chỉ cần gọi draw
+                    fish.draw(canvas, paint)
+                    Log.i("FishTankView", "Đã vẽ Nemo với currentAngle = ${fish.currentAngle}")
                 }
-                is Shrimp -> {
-                    shrimpView.draw(canvas, paint, fish)
-                    //shrimpView.drawNemo(canvas, paint, fish)
-                    Log.i("Thread4", "Đã tạo Nemo")
+                is Shark->{
+                    fish.draw(canvas, paint)
+                }
+                is Salmon->{
+                    fish.draw(canvas, paint)
+                }
+                is Shrimp->{
+                    fish.draw(canvas, paint)
                 }
                 else -> {
                     Log.e("FishTankView", "Unknown fish type: $fish")
-                    //shrimpView.drawShrimp(canvas, paint, fish as Shrimp)
                 }
             }
+//            when (fish) {
+//                is Nemo -> {
+//                    // Vì fish đã là NemoView (vì NemoView kế thừa Nemo), ta chỉ cần gọi draw
+//                    fish.draw(canvas, paint)
+//                    Log.i("FishTankView", "Đã vẽ Nemo với currentAngle = ${fish.currentAngle}")
+//                }
+//                is Shark->{
+//                    fish.draw(canvas, paint)
+//                }
+//                is Salmon->{
+//                    fish.draw(canvas, paint)
+//                }
+//                is Shrimp->{
+//                    fish.draw(canvas, paint)
+//                }
+//                else -> {
+//                    Log.e("FishTankView", "Unknown fish type: $fish")
+//                }
+//            }
         }
         postInvalidateOnAnimation() // Yeu cau ve lai man hình voi toc do man hinh
 

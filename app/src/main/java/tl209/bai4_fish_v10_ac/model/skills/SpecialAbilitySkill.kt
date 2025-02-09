@@ -10,5 +10,7 @@ class SpecialAbilitySkill(
     override fun activate(fish: Fish) {
         // Logic kích hoạt hiệu ứng đặc biệt, ví dụ: tăng tốc độ tạm thời
         println("${fish.name} activates its Special Ability: $description")
+        fish.vx *= 1.5f
+        fish.vy *= 1.5f
     }
 }
